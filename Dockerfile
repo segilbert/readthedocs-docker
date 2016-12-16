@@ -1,5 +1,7 @@
 FROM python:2
 
+ENV APPDIR /www
+
 # Prep the environment
 RUN apt-get update && apt-get -y install \
   texlive-latex-recommended \
@@ -12,17 +14,18 @@ RUN apt-get update && apt-get -y install \
   nano
 
 # Install readthedocs (bits as of Dec 15 2015)
-RUN mkdir /www
-WORKDIR /www
+RUN mkdir $APPDIR
+WORKDIR $APPDIR
 
-COPY ./files/readthedocs.org-master.tar.gz ./readthedocs.org-master.tar.gz
-COPY ./files/tasksrecommonmark.patch ./tasksrecommonmark.patch
-RUN tar -zxvf readthedocs.org-master.tar.gz
-RUN mv ./readthedocs.org-master ./readthedocs.org
+# Pull Down latest verion
+RUN mkdir -p $APPDIR && cd /tmp && \
+    wget -q --no-check-certificate https://github.com/rtfd/readthedocs.org/archive/master.zip 
 
-WORKDIR /www/readthedocs.org
+unzip /tmp/master.zip >/dev/null 2>/dev/null && \
+mv readthedocs.org-master/* readthedocs.org/.??* . && \
+rmdir readthedocs.org-master
 
-
+WORKDIR $APPDIR/readthedocs.org
 
 # Install the required Python packages
 RUN pip install -r requirements.txt
@@ -61,7 +64,7 @@ RUN chmod u+x ./gunicorn_start.sh
 RUN pip install supervisor
 ADD files/supervisord.conf /etc/supervisord.conf
 
-VOLUME /www/readthedocs.org
+VOLUME $APPDIR/readthedocs.org
 
 ENV RTD_PRODUCTION_DOMAIN 'localhost:8000'
 
