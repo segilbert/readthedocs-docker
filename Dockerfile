@@ -1,4 +1,6 @@
 FROM python:2
+#FROM ubuntu:16.04
+MAINTAINER Frozenbytes 
 
 ENV APPDIR /www
 
@@ -14,15 +16,24 @@ RUN apt-get update && apt-get -y install \
   texlive-latex-recommended \
   texlive-fonts-recommended \
   texlive-latex-extra \
+  apt-utils \
+  unzip \
+  wget \
+  curl \
+  git \
+  gettext \
   doxygen \
   dvipng \
   graphviz \
   nginx \
   nano
 
+RUN apt-get clean
+
+
 # Install readthedocs (latest)
 RUN mkdir $APPDIR
-RUN mkdir $APPDIR\readthedocs.org
+RUN mkdir $APPDIR && \readthedocs.org
 WORKDIR $APPDIR
 
 # Pull Down latest verion
@@ -30,7 +41,7 @@ RUN mkdir -p tmp && \
     wget -q --no-check-certificate https://github.com/rtfd/readthedocs.org/archive/master.zip 
 
 unzip ./tmp/master.zip >/dev/null 2>/dev/null && \
-mv readthedocs.org-master/* $APPDIR/readthedocs.org/.??* . && \
+mv readthedocs.org-master/* $APPDIR && /readthedocs.org/.??* . && \
 rmdir readthedocs.org-master
 
 WORKDIR readthedocs.org
@@ -72,7 +83,7 @@ RUN chmod u+x ./gunicorn_start.sh
 RUN pip install supervisor
 ADD files/supervisord.conf /etc/supervisord.conf
 
-VOLUME $APPDIR/readthedocs.org
+VOLUME $APPDIR && /readthedocs.org
 
 ENV RTD_PRODUCTION_DOMAIN 'localhost:8000'
 
