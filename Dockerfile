@@ -2,6 +2,13 @@ FROM python:2
 
 ENV APPDIR /www
 
+# Set one or more individual labels
+LABEL com.i-m-code.readthedocs.version="0.0.1-alpha"
+LABEL com.i-m-code.readthedocs.release-date="12-20-2016"
+LABEL com.i-m-code.readthedocs.license="MIT"
+LABEL com.i-m-code.readthedocs.repo="frozenbytes"
+LABEL com.i-m-code.readthedocs.baserepo="vassilvk"
+
 # Prep the environment
 RUN apt-get update && apt-get -y install \
   texlive-latex-recommended \
@@ -15,13 +22,14 @@ RUN apt-get update && apt-get -y install \
 
 # Install readthedocs (latest)
 RUN mkdir $APPDIR
+RUN mkdir $APPDIR\readthedocs.org
 WORKDIR $APPDIR
 
 # Pull Down latest verion
 RUN mkdir -p tmp && \
     wget -q --no-check-certificate https://github.com/rtfd/readthedocs.org/archive/master.zip 
 
-unzip /tmp/master.zip >/dev/null 2>/dev/null && \
+unzip ./tmp/master.zip >/dev/null 2>/dev/null && \
 mv readthedocs.org-master/* $APPDIR/readthedocs.org/.??* . && \
 rmdir readthedocs.org-master
 
