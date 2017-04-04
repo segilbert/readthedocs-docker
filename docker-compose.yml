@@ -1,0 +1,15 @@
+readthedocs:
+  image: vassilvk/readthedocs
+  container_name: readthedocs
+  ports:
+    - "8000:8000"
+  volumes:
+    - readthedocs.org:/www/readthedocs.org
+  environment:
+    # Required for ngix
+    - VIRTUAL_HOST = docs.itascahub.com
+    - VIRTUAL_PORT = 8000
+    # RTD config settings
+    - RTD_PRODUCTION_DOMAIN=localhost:8000"
+    - RTD_USE_SUBDOMAIN=true
+    - RTD_ALLOW_PRIVATE_REPOS=true
